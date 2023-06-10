@@ -33,16 +33,13 @@ namespace Poc.RealTimeBroker.HostedServices
 
         private void UpdatePrices(object state)
         {
-            using (IServiceScope scope = _services.CreateScope())
-            {
-                IHubContext<BrokerHub> hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<BrokerHub>>();
+            using IServiceScope scope = _services.CreateScope();
+            IHubContext<BrokerHub> hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<BrokerHub>>();
 
-                foreach (var stock in _stocks)
-                {
-                    double stockPrice = GetRandomNumber(5, 30);
-                    Console.WriteLine("Novo Preço: {0}", stockPrice);
-                    hubContext.Clients.Group(stock).SendAsync("UpdatePrice", new StockPrice(stock, stockPrice));
-                }
+            foreach (var stock in _stocks)
+            {
+                double stockPrice = GetRandomNumber(5, 30);
+                hubContext.Clients.Group(stock).SendAsync("UpdatePrices", new StockPrice(stock, stockPrice));
             }
         }
 
